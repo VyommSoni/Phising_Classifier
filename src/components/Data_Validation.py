@@ -44,17 +44,13 @@ class DataValidation:
         except Exception as e:
             raise CustomException(e,sys) from e
         
-    def validatefilename(self,filepath:str,length_of_timestamp:int,
-                         length_of_datestamp:int)->bool :
+    def validatefilename(self,filepath:str)->bool :
         try:
             filename=os.path.basename(filepath)
             original_files='phising_copy.csv'
 
-            if re.match(original_files,filename):
-                SplitAtDot=re.split('.csv',filename)
-                SplitAtDot=(re.split('_',SplitAtDot[0]))
-
-                filename_validation_status=len(SplitAtDot[1])==length_of_datestamp and len(SplitAtDot[2])==length_of_timestamp
+            if filename==original_files:
+                filename_validation_status=True
             else:
                 filename_validation_status=False
 
