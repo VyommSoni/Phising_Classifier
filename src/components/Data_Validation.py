@@ -10,7 +10,7 @@ import json
 from src.constants import *
 from dataclasses import dataclass
 from  src.exception import CustomException
-from src.Utils import utils
+from src.Utils.utils import MainUtils
 from src.logger import logging
 
 Length_of_timestamp_in_file=6
@@ -28,7 +28,7 @@ class DataValidation:
     def __init__(self,raw_data_store_dir:str):
         self.raw_data_dir=raw_data_store_dir
         self.data_validation_config=DataValidationConfig()
-        self.utils=utils()
+        self.utils=MainUtils()
 
     def valuesfromschema(self):
         try:

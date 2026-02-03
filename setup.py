@@ -15,6 +15,7 @@ setup(
     name='PhisingClasifier',
     author='Vyom',
     author_email='svyom21@gmail.com',
+    version='0.0.1',
     install_requires=requires_package('requirements.txt'),
     packages=find_packages()
 )

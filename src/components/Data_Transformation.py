@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import sys
 from sklearn.compose import ColumnTransformer
-from src.Utils import utils
+from src.Utils.utils import MainUtils
 
 from sklearn.impute import SimpleImputer
 from  sklearn.preprocessing import  RobustScaler,FunctionTransformer,OneHotEncoder,StandardScaler
@@ -27,7 +27,7 @@ class DataTransformation:
     def __init__(self,valid_data_dir):
         self.data_config=DataTransformationConfig()
         self.valid_data_dir=valid_data_dir
-        self.utils=utils()
+        self.utils=MainUtils()
 
     @staticmethod
     def merged_batch_data(valid_data_dir:str)->pd.DataFrame:

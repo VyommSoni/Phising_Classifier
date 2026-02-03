@@ -8,7 +8,7 @@ from src.data_access.phising_data import PhisingData
 from dataclasses import dataclass
 from src.logger import logging
 from src.exception import CustomException
-from src.Utils import utils
+from src.Utils.utils import MainUtils
 from src.constants import *
 
 
@@ -23,7 +23,7 @@ class DataIngestion:
     def __init__(self):
 
         self.data_ingestion_config = DataIngestionConfig()
-        self.utils = utils()
+        self.utils = MainUtils()
 
     def export_data_into_raw_data_dir(self) -> pd.DataFrame:
         try:
