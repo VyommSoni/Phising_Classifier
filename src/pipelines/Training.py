@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-import pathlib
+from pathlib import Path
 from src.components.Data_ingestion import DataIngestion
 from src.components.Data_Validation import DataValidation
 from src.components.Data_Transformation import DataTransformation
@@ -35,7 +35,7 @@ class TrainingPipeline:
         try:
             logging.info('Entering into Data Transformation function..')
             data_transformation=DataTransformation(valid_data_dir=valid_data_dir)
-            X_train,Y_train,X_test,Y_test,preprocessor_path=data_transformation.initiate_data_transformation()
+            X_train,X_test,Y_train,Y_test,preprocessor_path=data_transformation.initiate_data_transformation()
             return  X_train,Y_train,X_test,Y_test,preprocessor_path
         except Exception as e:
             raise CustomException(e,sys) from e
@@ -44,7 +44,7 @@ class TrainingPipeline:
                              X_train:np.array,
                              Y_train:np.array,X_test:np.array,
                              Y_test:np.array,
-                             preprocessor_path:pathlib.Path):
+                             preprocessor_path:Path):
         try:
             logging.info('Entering into model training function..')
             model_trainer=ModelTrainer()

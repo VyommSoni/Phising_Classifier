@@ -15,6 +15,8 @@ from src.exception import CustomException
 from src.logger import logging
 from dataclasses import dataclass
 from src.constants import *
+from dotenv import load_dotenv
+load_dotenv()
 
 @dataclass
 class DataTransformationConfig:
@@ -49,12 +51,16 @@ class DataTransformation:
 
         try:
             dataframe=DataTransformation.merged_batch_data(valid_data_dir=self.valid_data_dir)
-            dataframe=self.utils.remove_unwanted_spaces(dataframe)
+            dataframe=self.utils.remove_unwanted_space(dataframe)
             dataframe.replace('?',np.nan,inplace=True)
 
             #splitting
-            X=dataframe.drop(colums=TARGET_COLUMNS)
-            Y=np.where(dataframe[TARGET_COLUMNS]==-1,0,1)
+            # Convert target values -1 → 0
+            dataframe[TARGET_COLUMNS] = np.where(
+            dataframe[TARGET_COLUMNS] == -1, 0, 1)
+
+            X=dataframe.drop(columns=TARGET_COLUMNS)
+            Y=dataframe[TARGET_COLUMNS]
 
             #class imbalance 
             Sampler=RandomOverSampler()
@@ -67,9 +73,13 @@ class DataTransformation:
             preprocessor=SimpleImputer(strategy='most_frequent')
             X_train_scaled=preprocessor.fit_transform(X_train)
             X_test_scaled=preprocessor.transform(X_test)
+            print(X_train_scaled.shape,X_test_scaled.shape,Y_train.shape,Y_test.shape)
+
 
             preprocessor_path=self.data_config.Transformed_file
             os.makedirs(os.path.dirname(preprocessor_path),exist_ok=True)
+            self.utils.save_object(file_path=preprocessor_path,
+                                   obj=preprocessor)
             return X_train_scaled,X_test_scaled,Y_train,Y_test,preprocessor_path
         except Exception as e:
             raise CustomException(e,sys) from e

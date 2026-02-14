@@ -4,12 +4,14 @@ import numpy as np
 import pandas as pd
 import pymongo as MongoClient
 from zipfile import Path
-from src.data_access.phising_data import PhisingData
+from src.Data_Access.data_access import PhisingData
 from dataclasses import dataclass
 from src.logger import logging
 from src.exception import CustomException
 from src.Utils.utils import MainUtils
 from src.constants import *
+from dotenv import load_dotenv
+load_dotenv()
 
 
 

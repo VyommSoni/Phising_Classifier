@@ -24,12 +24,13 @@ class PredictPipeline:
         try:
             pred_file_input_dir = "prediction_artifacts"
             os.makedirs(pred_file_input_dir, exist_ok=True)
-
+             
             input_csv_file = self.request.files['file']
-            pred_file_path = os.path.join(pred_file_input_dir, input_csv_file.filename)
+            pred_file_path = os.path.join(pred_file_input_dir,input_csv_file.filename)
             
             
             input_csv_file.save(pred_file_path)
+            print(f"pred file path", pred_file_path)
             return pred_file_path
         
         except Exception as e:
@@ -38,11 +39,12 @@ class PredictPipeline:
             try:
                 model_path = self.utils.download_object(
                     bucket_name=AWS_S3_BUCKET_NAME,
-                    bucket_file_name="model.pkl",
-                    dest_file_name="model.pkl",
+                    bucket_filename="model.pkl",
+                    dest_file="model.pkl"
                 )
 
-                model = self.utils.load_object(file_path=model_path)
+                model = self.utils.load_object(filepath=model_path)
+                print(f"model",model)
 
                 preds = model.predict(features)
 
@@ -50,12 +52,13 @@ class PredictPipeline:
 
             except Exception as e:
                 raise CustomException(e, sys)
-    def get_predict_dataframe(self,input_dataframe_path:pd.DataFrame)->pd.DataFrame:
+    def get_predict_dataframe(self,input_dataframe_path:str)->pd.DataFrame:
         try:
             prediction_column_name : str = TARGET_COLUMNS
             input_dataframe: pd.DataFrame = pd.read_csv(input_dataframe_path)
-            
-            predictions = self.predict(input_dataframe)
+            if TARGET_COLUMNS in input_dataframe.columns:
+               input_dataframe=input_dataframe.drop(columns=[TARGET_COLUMNS])
+               predictions = self.predict(input_dataframe)
             input_dataframe[prediction_column_name] = [pred for pred in predictions]
             target_column_mapping = {0:'phising', 1:'safe'}
 
@@ -64,6 +67,7 @@ class PredictPipeline:
             os.makedirs(self.prediction_file_detail.prediction_file_dir, exist_ok= True)
             input_dataframe.to_csv(self.prediction_file_detail.prediction_file_path, index= False)
             logging.info("predictions completed. ")
+            return input_dataframe
 
         except Exception as e:
             raise CustomException(e, sys) from e
@@ -77,4 +81,3 @@ class PredictPipeline:
 
         except Exception as e:
             raise CustomException(e,sys)
-            

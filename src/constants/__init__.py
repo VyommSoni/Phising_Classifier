@@ -2,7 +2,7 @@
 MODEL_EXTENSTION=".pkl"
 MODEL_NAME='model'
 
-AWS_S3_BUCKET_NAME="phisingclassifierbucket"
+AWS_S3_BUCKET_NAME="phisingclassifier"
 TARGET_COLUMNS='Result'
 MONGO_DATABASE_NAME='Phising'
 

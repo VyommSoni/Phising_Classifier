@@ -23,14 +23,13 @@ class MainUtils:
         
     def read_Schema_Config(self)->dict:
         try:
-            os.makedirs('Config',exist_ok=True)
-            Schema_config=self.read_yamlfile(os.path.join('Config','model.yaml'))
+            Schema_config=self.read_yamlfile(os.path.join('config','model.yaml'))
             return Schema_config
         except Exception as e:
             raise CustomException(e,sys) from e
         
     @staticmethod
-    def save_object(file_path:str,obj:object)->None:
+    def save_object(file_path:str,obj:object):
         logging.info('Enter into save object fuction...!')
         try:
             with open(file_path,'wb') as file:
@@ -41,20 +40,22 @@ class MainUtils:
          raise CustomException (e,sys) from e
         
     @staticmethod
-    def load_object(filepath:str)->None:
+    def load_object(filepath:str)->object:
         logging.info('Entering into load_object function')
         try:
             with open(filepath ,'rb') as file:
-                obj=pickle.load(filepath)
+                obj=pickle.load(file)
 
             logging.info('Exiting the load object function')
+            return obj
         except Exception as e:
             raise CustomException(e,sys) from e
     
     @staticmethod
     def upload_files(from_file,to_file,bucket_name):
         try:
-         s3_resource=boto3.resource("s3")
+         s3_resource=boto3.resource("s3"
+                                    ,region_name="us-east-1")
          s3_resource.meta.client.upload_file(from_file,bucket_name,to_file)
 
         except Exception as e :

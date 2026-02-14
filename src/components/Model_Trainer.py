@@ -14,13 +14,15 @@ from src.Utils.utils import MainUtils
 from src.constants import *
 from xgboost import XGBClassifier
 from dataclasses import dataclass
+from dotenv import load_dotenv
+load_dotenv()
 
 @dataclass
 class ModelTrainerConfig:
     model_dir=os.path.join('artifacts','model_trainer')
     train_model_path=os.path.join(model_dir,'trained_model','model.pkl')
     expected_accuracy=0.45
-    model_conifg_path=os.path.join('Config','model.yaml')
+    model_conifg_path=os.path.join('config','model.yaml')
 
 class VisibilityModel:
     def __init__(self, preprocessing_object: ColumnTransformer, trained_model_object):
@@ -70,10 +72,12 @@ class ModelTrainer:
                         y_test,
                         models):
         try:
+             print("x_train shape:", X_train.shape)
+             print("y_train shape:", y_train.shape)
 
-            report = {}
+             report = {}
 
-            for i in range(len(list(models))):
+             for i in range(len(list(models))):
                 model = list(models.values())[i]
 
                 model.fit(X_train, y_train)  # Train model
@@ -88,7 +92,7 @@ class ModelTrainer:
 
                 report[list(models.keys())[i]] = test_model_score
 
-            return report
+             return report
 
         except Exception as e:
             raise CustomException(e, sys)
@@ -101,9 +105,9 @@ class ModelTrainer:
         try:
 
             model_report: dict = self.evaluate_models(
-                x_train=x_train,
+                X_train=x_train,
                 y_train=y_train,
-                x_test=x_test,
+                X_test=x_test,
                 y_test=y_test,
                 models=self.models
             )
@@ -135,11 +139,11 @@ class ModelTrainer:
 
         try:
 
-            model_param_grid = self.utils.read_yaml_file(self.model_trainer_config.model_config_file_path)["model_selection"]["model"][
+            model_param_grid = self.utils.read_yamlfile(self.model_trainer_config.model_conifg_path)["model_selection"]["model"][
                     best_model_name]["search_param_grid"]
 
             grid_search = GridSearchCV(
-                best_model_object, param_grid=model_param_grid, cv=5, n_jobs=-1, verbose=1)
+                best_model_object, param_grid=model_param_grid, cv=5, n_jobs=1, verbose=1)
 
             grid_search.fit(X_train, y_train)
 
@@ -165,7 +169,7 @@ class ModelTrainer:
 
             logging.info(f"Extracting model config file path")
 
-            preprocessor = self.utils.load_object(file_path=preprocessor_path)
+            preprocessor = self.utils.load_object(filepath=preprocessor_path)
 
             logging.info(f"Extracting model config file path")
 
@@ -203,7 +207,8 @@ class ModelTrainer:
                 raise Exception("No best model found with an accuracy greater than the threshold 0.6")
 
             logging.info(f"Best found model on both training and testing dataset")
-
+            print(f"preprocessor,{preprocessor}")
+            
             custom_model = VisibilityModel(
                 preprocessing_object=preprocessor,
                 trained_model_object=best_model
@@ -220,8 +225,8 @@ class ModelTrainer:
                 obj=custom_model,
             )
 
-            self.utils.upload_files(from_filename=self.model_trainer_config.train_model_path,
-                                   to_filename="model.pkl",
+            self.utils.upload_files(from_file=self.model_trainer_config.train_model_path,
+                                   to_file="model.pkl",
                                    bucket_name=AWS_S3_BUCKET_NAME)
 
             return best_model_score

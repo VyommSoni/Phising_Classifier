@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from  src.exception import CustomException
 from src.Utils.utils import MainUtils
 from src.logger import logging
+from dotenv import load_dotenv
+load_dotenv()
 
 Length_of_timestamp_in_file=6
 Length_of_Datestamp_in_file=8
@@ -34,7 +36,6 @@ class DataValidation:
         try:
             with open(self.data_validation_config.schema_config_file_path,'r') as f :
               dic=json.load(f)
-              f.close()
             LengthOfDateStampsInFile=dic['LengthOfDateStampInFile']
             LengthOfTimeStampInFile=dic['LengthOfTimeStampInFile']
             Col_names=dic['ColName']
@@ -42,7 +43,7 @@ class DataValidation:
 
             return LengthOfDateStampsInFile,LengthOfTimeStampInFile,Col_names,Number_of_Columns
         except Exception as e:
-            raise CustomException(e,sys) from e
+            raise CustomException(e,sys) 
         
     def validatefilename(self,filepath:str)->bool :
         try:
@@ -115,13 +116,10 @@ class DataValidation:
             validated_files = 0
             for raw_file_path in raw_batch_files_paths:
                 file_name_validation_status = self.validatefilename(
-                    raw_file_path,
-                    length_of_date_stamp=length_of_date_stamp,
-                    length_of_time_stamp=length_of_time_stamp
-                )
+                    raw_file_path)
                 column_length_validation_status = self.validate_no_of_columns(
                     raw_file_path,
-                    schema_no_of_columns=no_of_column)
+                    schema_no_of_cols=no_of_column)
 
                 missing_value_validation_status = self.vaildate_missing_values_in_whole_columns(raw_file_path)
 
