@@ -25,7 +25,7 @@ class PredictPipeline:
             pred_file_input_dir = "prediction_artifacts"
             os.makedirs(pred_file_input_dir, exist_ok=True)
              
-            input_csv_file = self.request.files['file']
+            input_csv_file = self.request.filesv_files['file']
             pred_file_path = os.path.join(pred_file_input_dir,input_csv_file.filename)
             
             

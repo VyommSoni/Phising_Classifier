@@ -34,3 +34,6 @@ boto3
 pyyaml
 flask
 database_connect
+certifi
+python-dotenv
+xgboost
